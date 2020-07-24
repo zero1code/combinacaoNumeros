@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "67880552742",
+    "firebase_url": "https://combinacao-de-numeros-cbc45.firebaseio.com",
+    "project_id": "combinacao-de-numeros-cbc45",
+    "storage_bucket": "combinacao-de-numeros-cbc45.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:67880552742:android:eeafbd6923d2113ea919e7",
+        "android_client_info": {
+          "package_name": "loteria.combinacao.google.com.combinacaoloterias"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "67880552742-0ne2n2m98ufqnh7tb2oa3502sgp7dgit.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCdXFnH_Hps4KYYQH2ILdLjNpSkdT8-vU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "67880552742-0ne2n2m98ufqnh7tb2oa3502sgp7dgit.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
