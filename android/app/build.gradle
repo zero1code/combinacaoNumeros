@@ -132,8 +132,8 @@ android {
         applicationId "loteria.combinacao.google.com.combinacaoloterias"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 8
-        versionName "1.5.1"
+        versionCode 12
+        versionName "1.5.5"
         multiDexEnabled true
 
     }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BANNER_AD, VIDEO_AD } from 'react-native';
 import {
   View,
   Image,
@@ -6,7 +7,10 @@ import {
   Alert,
   Animated,
   ActivityIndicator,
+  Share,
 } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
+import Balls from '../../components/Balls';
 import {
   Container,
   BodyApp,
@@ -16,8 +20,6 @@ import {
   BtnOptionList,
   BtnOptionListText,
   BallsList,
-  Balls,
-  BallText,
   Footer,
   BtnCombine,
   LoadingBtnCombine,
@@ -29,6 +31,9 @@ import {
   CombinationsContainer,
   TotalCombinationsText,
   CombinationsListText,
+  ShareButton,
+  SaveButton,
+  SeeSavedCombinationsButton,
 } from './styles';
 import { PanGestureHandler, State, ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Feather';
@@ -38,9 +43,12 @@ import admob, {
   MaxAdContentRating,
   TestIds,
   RewardedAd,
+  BannerAd,
   RewardedAdEventType,
   AdEventType,
+  BannerAdSize,
 } from '@react-native-firebase/admob';
+import { useNavigation } from '@react-navigation/native';
 
 interface Dataprops {
   id: number;
@@ -51,7 +59,18 @@ interface Dataprops {
   numbers: number;
 }
 
+const adUnitId = __DEV__ ? TestIds.REWARDED : VIDEO_AD;
+
+  const rewarded = RewardedAd.createForAdRequest(adUnitId, {
+    requestNonPersonalizedAdsOnly: true,
+  });
+
+const adBannerId = __DEV__ ? TestIds.BANNER : BANNER_AD;
+
 const Dashboard: React.FC = () => {
+
+  const { navigate } = useNavigation();
+
   const [selectedItem, setSelecteditem] = useState<number>(0);
   const [quantityNumbers, setQuantityNumbers] = useState<string[]>([]);
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
@@ -247,6 +266,7 @@ const Dashboard: React.FC = () => {
   }
 
   function handleSelectedNumber(number: number): void {
+
     const alreadySelected = selectedNumbers.findIndex(
       (item) => item === number,
     );
@@ -258,6 +278,8 @@ const Dashboard: React.FC = () => {
     } else {
       setSelectedNumbers([...selectedNumbers, number]);
     }
+
+    console.log(selectedNumbers);
   }
 
   function setBackgroundColor(id: number): void {
@@ -291,17 +313,83 @@ const Dashboard: React.FC = () => {
     setCombinationsQuantity(counter);
   }
 
+  async function shareCombinations() {
+
+    let combinationsNumbers = '';
+
+    for (var i=0; i < combinations.length; i++) {
+      combinationsNumbers += `${i + 1}º - ${combinations[i]} \n\n`
+    }
+
+    try {
+      const result = await Share.share({
+        title: 'Compartilhar combinações em...',
+        message: `Aqui estão as suas combinações!\nBaixe já o nosso app!\nhttps://play.google.com/store/apps/details?id=loteria.combinacao.google.com.combinacaoloterias\n\n${combinationsNumbers}`,
+      });
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+        } else {
+          // shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (err) {
+      Alert.alert('Erro', err.message);
+    }
+  }
+
+  async function save() {
+
+    const saveCombination = {
+      numbers: selectedNumbers,
+      numbersQuantity: addOrRemove,
+      background: selectedColor,
+      combinationsQuantity,
+    }
+
+    const existingCombinations = await AsyncStorage.getItem('combinations');
+
+    let combination = JSON.parse(existingCombinations);
+
+    if (!combination) {
+      combination = [];
+    }
+
+    combination.push(saveCombination);
+
+    await AsyncStorage.setItem('combinations', JSON.stringify(combination))
+      .then(() => {
+        Alert.alert('Combinação Salva', 'Os números escolhidos foram salvos!');
+      })
+      .catch(() => {
+        Alert.alert('Erro ao salvar a combinação', 'Tente novamente.');
+      })
+
+  }
+
+  function saveCombinations() {
+    Alert.alert(
+      'Salvar combinação',
+      'Salvar os números escolhidos?',
+      [
+        {
+          text: 'NÃO',
+          style: 'cancel',
+        },
+        {
+          text: 'SIM',
+          onPress: () => {save()},
+        },
+      ],
+      { cancelable: false }
+    )
+  }
+
   // TUDO SOBRE OS ANUNCIOS
 
   const [loaded, setLoaded] = useState(false);
-
-  const adUnitId = __DEV__
-    ? TestIds.REWARDED
-    : 'ca-app-pub-8710078732554281/2731061542';
-
-  const rewarded = RewardedAd.createForAdRequest(adUnitId, {
-    requestNonPersonalizedAdsOnly: true,
-  });
 
   admob()
     .setRequestConfiguration({
@@ -345,6 +433,11 @@ const Dashboard: React.FC = () => {
       eventListener();
     };
   }, [rewarded]);
+
+
+  function handleNavigateToSavedCombinations() {
+    navigate('savedCombinations');
+  }
 
   return (
 
@@ -401,15 +494,13 @@ const Dashboard: React.FC = () => {
                   numColumns={6}
                   renderItem={({ item }: {item: string}) => (
                     <Balls
-                      activeOpacity={0.5}
                       key={item}
                       background={selectedNumbers.includes(parseInt(item)) ? selectedColor : '#fafafa'}
                       borderColor={selectedNumbers.includes(parseInt(item)) ? '#fff' : `${selectedColor}4D`}
+                      textColor={selectedNumbers.includes(parseInt(item)) ? '#fff' : '#444' }
                       onPress={() => handleSelectedNumber(parseInt(item))}
                     >
-                      <BallText textColor={selectedNumbers.includes(parseInt(item)) ? '#fff' : '#444' }>
-                        {item}
-                      </BallText>
+                      {item}
                     </Balls>
                   )}
                 />
@@ -441,7 +532,13 @@ const Dashboard: React.FC = () => {
               <Icon name="minus-circle" size={24} color="#666" />
             </LessButton>
           </Footer>
-
+          <BannerAd
+              unitId={adBannerId}
+              size={BannerAdSize.FULL_BANNER}
+              requestOptions={{
+                requestNonPersonalizedAdsOnly: true,
+              }}
+            />
         </View>
             }
           />
@@ -462,11 +559,29 @@ const Dashboard: React.FC = () => {
           ]}>
           <View style={{backgroundColor: selectedColor, alignItems: 'center', borderTopLeftRadius: 20, borderTopRightRadius: 20}}>
             <Icon name='minus' size={30} color='#fff' />
-            <TotalCombinationsText >
-              {combinations.length > 0 ?
-              `${combinationsQuantity} COMBINAÇÕES` :
-              'Suas combinações aparecerão aqui!'}
-            </TotalCombinationsText>
+            <View style={{flexDirection: 'row', paddingBottom: 20, marginTop: -10}}>
+              <TotalCombinationsText >
+                {combinations.length > 0 ?
+                `${combinationsQuantity} COMBINAÇÕES` :
+                'Nenhuma combinação'}
+              </TotalCombinationsText>
+              <View style={{ width: 100, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+                {combinations.length != 0 &&
+                  <>
+                    <ShareButton onPress={() => shareCombinations()}>
+                      <Icon name='share-2' size={20} color='#F0F0F7' />
+                    </ShareButton>
+                    <SaveButton onPress={() => saveCombinations()}>
+                      <Icon name='save' size={20} color='#F0F0F7' />
+                    </SaveButton>
+                  </>
+                }
+
+                <SeeSavedCombinationsButton style={{marginLeft: combinations.length === 0 ? 'auto' : 0}} onPress={handleNavigateToSavedCombinations}>
+                  <Icon name='bookmark' size={20} color='#F0F0F7' />
+                </SeeSavedCombinationsButton>
+              </View>
+            </View>
           </View>
           <ScrollView style={{height: 378}}>
             {combinations.map((item, index) => (

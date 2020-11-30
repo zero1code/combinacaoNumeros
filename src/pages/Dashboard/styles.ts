@@ -3,23 +3,10 @@ import { FlatList, Animated } from 'react-native';
 import BtnScale from 'react-native-touchable-scale';
 import { RectButton } from 'react-native-gesture-handler';
 
-interface ContainerTranslateYProps {
-  translateY: Animated.Value;
-}
-
 interface BtnScaleOptionListProps {
   background: string;
   borderColor: string;
   selectedOption: number;
-}
-
-interface BallsProps {
-  background: string;
-  borderColor: string;
-}
-
-interface BallTextProps {
-  textColor: string;
 }
 
 interface BtnCombineProps {
@@ -90,35 +77,11 @@ export const BallsList = styled(FlatList)`
   align-content: center;
 `;
 
-export const Balls = styled.TouchableOpacity<BallsProps>`
-  width: 45px;
-  height: 45px;
-  border-width: 2px;
-  border-radius: 50px;
-  align-items: center;
-  justify-content: center;
-  margin: 5px;
-  background-color: ${props => props.background};
-  border-color: ${props => props.borderColor};
-
-  ${props => props.borderColor === '#fff' &&
-    css`
-      elevation: 1;
-    `
-  }
-
-`;
-
-export const BallText = styled.Text<BallTextProps>`
-  font-family: 'Arciform';
-  color: ${props => props.textColor};
-`;
-
 export const Footer = styled.View`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 30px;
+  padding-bottom: 20px;
   padding-top: 30px;
 `;
 
@@ -190,15 +153,21 @@ export const CombinationsContainer = styled(Animated.View)`
 `;
 
 export const TotalCombinationsText = styled.Text`
-  width: 100%;
+  width: 65%;
   font-family: 'Arciform';
   font-size: 16px;
-  color: #fff;
-  padding-left: 30px;
-  margin-top: -2px;
-  margin-bottom: 10px;
-  padding-bottom: 10px;
+  color: #F0F0F7;
+  margin-left: 15px;
   text-align: left;
+`;
+
+export const ShareButton = styled.TouchableOpacity`
+`;
+
+export const SaveButton = styled.TouchableOpacity`
+`;
+
+export const SeeSavedCombinationsButton = styled.TouchableOpacity`
 `;
 
 export const CombinationsList = styled(FlatList)`
