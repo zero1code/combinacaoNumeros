@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BANNER_AD, VIDEO_AD } from 'react-native';
+import { BANNER_AD, VIDEO_AD } from '@env';
 import {
   View,
   Image,
@@ -278,8 +278,6 @@ const Dashboard: React.FC = () => {
     } else {
       setSelectedNumbers([...selectedNumbers, number]);
     }
-
-    console.log(selectedNumbers);
   }
 
   function setBackgroundColor(id: number): void {

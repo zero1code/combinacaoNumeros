@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
+import { VIDEO_AD } from '@env';
 import Icon from 'react-native-vector-icons/Feather';
 
 import Balls from '../../components/Balls';
@@ -33,7 +34,7 @@ export interface SavedCombinationProps {
   combinationsQuantity: number;
 }
 
-const adUnitId = __DEV__ ? TestIds.REWARDED : 'ca-app-pub-8710078732554281/2731061542';
+const adUnitId = __DEV__ ? TestIds.REWARDED : VIDEO_AD;
 
   const rewarded = RewardedAd.createForAdRequest(adUnitId, {
     requestNonPersonalizedAdsOnly: true,
@@ -48,9 +49,6 @@ const SavedCombinations: React.FC = () => {
   const [data, setData] = useState({});
   const [adSaw, setAdSaw] = useState(false);
 
-  const abortController = new AbortController();
-  const signal = abortController.signal;
-
   useEffect(() => {
     if (adSaw) {
       setAdSaw(!adSaw);
@@ -60,7 +58,7 @@ const SavedCombinations: React.FC = () => {
 
   useEffect(() => {
     AsyncStorage.getItem('combinations', (err, result) => {
-      if (result !== undefined) {
+      if (result !== null) {
         const data = JSON.parse(result);
 
         data.map((item: SavedCombinationProps, index: number) => {
@@ -69,11 +67,6 @@ const SavedCombinations: React.FC = () => {
 
         setSavedCombinations(data.reverse());
       }
-
-      return function cleanup() {
-        abortController.abort();
-      }
-
     });
   }, [savedCombinations]);
 
