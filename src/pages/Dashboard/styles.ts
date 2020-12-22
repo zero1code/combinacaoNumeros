@@ -2,6 +2,7 @@ import styled, { css } from 'styled-components/native';
 import { FlatList, Animated } from 'react-native';
 import BtnScale from 'react-native-touchable-scale';
 import { RectButton } from 'react-native-gesture-handler';
+import { Dataprops } from './index';
 
 interface BtnScaleOptionListProps {
   background: string;
@@ -17,22 +18,20 @@ interface ViewQuantityErrorProps {
   error: boolean;
 }
 
+interface SavedButtonProps {
+  background: string;
+}
+
 export const Container = styled.View`
   flex: 1;
-  flex-direction: column;
 `;
 
-export const BodyApp = styled(Animated.View)`
-  width: 100%;
-  height: 92%;
-`;
-
-export const BodyAppList = styled(FlatList)`
-
+export const ContainerScrollView = styled.ScrollView`
+  flex: 1;
 `;
 
 export const Title = styled.Text`
-  font-size: 40px;
+  font-size: 30px;
   color: #444;
   margin-left: 10px;
   margin-right: 20px;
@@ -41,8 +40,9 @@ export const Title = styled.Text`
   font-family: 'Arciform';
 `;
 
-export const OptionList = styled(FlatList)`
-
+export const HorizontalOptionslList = styled(FlatList as new () => FlatList<Dataprops>)`
+  width: 100%;
+  height: 150px;
 `;
 
 export const BtnOptionList = styled(BtnScale)<BtnScaleOptionListProps>`
@@ -72,7 +72,7 @@ export const BtnOptionListText = styled.Text`
   font-family: 'Arciform';
 `;
 
-export const BallsList = styled(FlatList)`
+export const BallsList = styled(FlatList as new () => FlatList<>)`
   flex: 1;
   align-content: center;
 `;
@@ -86,15 +86,6 @@ export const Footer = styled.View`
 `;
 
 export const BtnCombine = styled(RectButton)<BtnCombineProps>`
-  width: 180px;
-  height: 50px;
-  border-radius: 10px;
-  align-items: center;
-  justify-content: center;
-  background-color: ${props => props.background};
-`;
-
-export const LoadingBtnCombine = styled.View<BtnCombineProps>`
   width: 180px;
   height: 50px;
   border-radius: 10px;
@@ -145,42 +136,15 @@ export const LessButton = styled.TouchableOpacity`
   margin-left: 10px;
 `;
 
-export const CombinationsContainer = styled(Animated.View)`
-  background-color: #f2f2f2;
+export const SeeSavedCombinationsButton = styled.TouchableOpacity<SavedButtonProps>`
+  width: 40px;
+  height: 40px;
+  background: ${props => props.background};
+  border-radius: 20px;
+  align-items: center;
+  justify-content: center;
+
   elevation: 1;
-  border-top-right-radius: 20px;
-  border-top-left-radius: 20px;
-`;
-
-export const TotalCombinationsText = styled.Text`
-  width: 65%;
-  font-family: 'Arciform';
-  font-size: 16px;
-  color: #F0F0F7;
-  margin-left: 15px;
-  text-align: left;
-`;
-
-export const ShareButton = styled.TouchableOpacity`
-`;
-
-export const SaveButton = styled.TouchableOpacity`
-`;
-
-export const SeeSavedCombinationsButton = styled.TouchableOpacity`
-`;
-
-export const CombinationsList = styled(FlatList)`
-
-`;
-
-export const CombinationsListText = styled.Text`
-  font-family: 'Arciform';
-  font-size: 16px;
-  color: #666;
-  margin-left: 15px;
-  margin-top: 20px;
-  margin-bottom: 20px;
 `;
 
 
