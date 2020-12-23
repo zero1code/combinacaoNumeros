@@ -33,7 +33,7 @@ const CombinationsList: React.FC = () => {
   const array = params.data.numbers;
   const qtdPorArray = params.data.qtdNumbers;
   const selectedColor = params.data.background;
-  const [combinationsQuantity, setCombinationsQuantity] = useState(params.data.combinationsQuantity);
+  const [combinationsQuantity, setCombinationsQuantity] = useState(0);
   const [combinations, setCombinations] = useState<string[]>([]);
   const [loadingCombinations, setLoadingCombinations] = useState<boolean>(true);
 
@@ -61,7 +61,7 @@ const CombinationsList: React.FC = () => {
     setCombinations(result);
     setCombinationsQuantity(print[1]);
 
-  }, []);
+  }, [array]);
 
   async function save() {
 
@@ -69,18 +69,21 @@ const CombinationsList: React.FC = () => {
       numbers: array,
       numbersQuantity: qtdPorArray,
       background: selectedColor,
-      combinationsQuantity,
+      // combinationsQuantity,
     }
 
     const existingCombinations = await AsyncStorage.getItem('combinations');
 
     let combination = JSON.parse(existingCombinations);
 
+    if (!combination) {
+      combination = [];
+    }
 
     const existsCombination = combination.map((item) => {
       if (
         JSON.stringify(item.numbers) === JSON.stringify(saveCombination.numbers) &&
-        item.combinationsQuantity === saveCombination.combinationsQuantity &&
+        // item.combinationsQuantity === saveCombination.combinationsQuantity &&
         item.background === saveCombination.background
       ) {
         return true;
@@ -89,10 +92,6 @@ const CombinationsList: React.FC = () => {
     if (existsCombination.includes(true)) {
       Alert.alert('Atenção', 'Você já tem essa mesma combinação salva!');
       return;
-    }
-
-    if (!combination) {
-      combination = [];
     }
 
     combination.push(saveCombination);
@@ -135,6 +134,8 @@ const CombinationsList: React.FC = () => {
   }
 
   function handleNavigateToSavedCombinations() {
+    setCombinations([]);
+    setCombinationsQuantity(0);
     navigate('savedCombinations');
   }
 

@@ -26,7 +26,7 @@ import {
   SeeSavedCombinationsButton,
 } from './styles';
 import Icon from 'react-native-vector-icons/Feather';
-import { data } from '../../data';
+import { data as service } from '../../data';
 
 import admob, {
   MaxAdContentRating,
@@ -65,16 +65,22 @@ const Dashboard: React.FC = () => {
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
   const [selectedColor, setSelectedColor] = useState('#209869');
   const [addOrRemove, setAddOrRemove] = useState<number>(0);
-  const [combinations, setCombinations] = useState<string[]>([]);
   const [error, setError] = useState<boolean>(false);
-  const [combinationsQuantity, setCombinationsQuantity] = useState<number>(0);
   const [connected, setConnected] = useState(true);
+  const [adSaw, setAdSaw] = useState(false);
+  const [data, setData] = useState({});
 
   const elements: Array<string> = [];
 
   useEffect(() => {
+    if (adSaw) {
+      setAdSaw(!adSaw);
+      navigate('combinationsList', { data });
+    }
+  }, [adSaw]);
+
+  useEffect(() => {
     NetInfo.fetch().then(state => {
-      console.log(state.isConnected);
       setConnected(state.isConnected);
     });
   }, []);
@@ -106,7 +112,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     function setNumbers(id: number) {
-      const [numbersQuantity] = data.filter((item) => item.id === id);
+      const [numbersQuantity] = service.filter((item) => item.id === id);
 
       if (id === 3) {
         for (let i = 1; i < numbersQuantity.numbers; i++) {
@@ -132,7 +138,15 @@ const Dashboard: React.FC = () => {
     setNumbers(selectedItem);
   }, [selectedItem]);
 
-  function showAdVideo() {
+  function handleNavigateToCombinationList() {
+
+    const data = {
+      background: selectedColor,
+      numbers: selectedNumbers,
+      qtdNumbers: addOrRemove,
+    };
+
+    setData(data);
 
     if (addOrRemove > selectedNumbers.length) {
       Alert.alert('Erro', 'A quantidade de números por combinação não pode ser maior que a quantidade de números escolhidos!');
@@ -146,7 +160,7 @@ const Dashboard: React.FC = () => {
     }
 
     if (!loaded) {
-      handleNavigateToCombinationList();
+      navigate('combinationsList', { data });
     }
     else {
       Alert.alert(
@@ -165,16 +179,6 @@ const Dashboard: React.FC = () => {
         { cancelable: false }
       )
     }
-  }
-
-  function handleNavigateToCombinationList() {
-    const data = {
-      background: selectedColor,
-      numbers: selectedNumbers,
-      qtdNumbers: addOrRemove,
-    };
-
-    navigate('combinationsList', { data });
   };
 
   function handleIncrementOrDecrement(number: number): void {
@@ -202,8 +206,7 @@ const Dashboard: React.FC = () => {
       setSelecteditem(id);
       setBackgroundColor(id);
       setSelectedNumbers([]);
-      setCombinations([]);
-      setCombinationsQuantity(0);
+      setAddOrRemove(0)
     }
   }
 
@@ -223,7 +226,7 @@ const Dashboard: React.FC = () => {
   }
 
   function setBackgroundColor(id: number): void {
-    const [response] = data.filter((item) => item.id === id);
+    const [response] = service.filter((item) => item.id === id);
 
     setSelectedColor(response.background);
   }
@@ -254,7 +257,7 @@ const Dashboard: React.FC = () => {
       }
 
       if (type === RewardedAdEventType.EARNED_REWARD) {
-        handleNavigateToCombinationList();
+        setAdSaw(true);
         setLoaded(false);
       }
       if (type === AdEventType.CLOSED) {
@@ -303,7 +306,7 @@ const Dashboard: React.FC = () => {
         </View>
 
         <HorizontalOptionslList
-          data={data}
+          data={service}
           horizontal
           showsHorizontalScrollIndicator={false}
           keyExtractor={(item) => String(item.id)}
@@ -349,7 +352,7 @@ const Dashboard: React.FC = () => {
                   background={selectedColor}
                   rippleColor='#ffffff4D'
                   onPress={() => {
-                    showAdVideo()
+                    handleNavigateToCombinationList()
                   }}
                 >
                   <BtnCombineText>COMBINAR</BtnCombineText>

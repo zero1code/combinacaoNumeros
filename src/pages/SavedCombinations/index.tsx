@@ -31,7 +31,6 @@ export interface SavedCombinationProps {
   }>;
   numbersQuantity: number;
   background: string;
-  combinationsQuantity: number;
 }
 
 const adUnitId = __DEV__ ? TestIds.REWARDED : VIDEO_AD;
@@ -99,14 +98,14 @@ const SavedCombinations: React.FC = () => {
     setSavedCombinations(combinations);
   }
 
-  function handleNavigateToCombinationsList(numbers: number[], qtdNumbers: number, background: string, combinationsQuantity: number) {
+  function handleNavigateToCombinationsList(numbers: number[], qtdNumbers: number, background: string) {
 
     const data = {
       numbers,
       qtdNumbers,
       background,
-      combinationsQuantity,
     };
+
     setData(data);
 
     if (!loaded) {
@@ -190,7 +189,7 @@ const SavedCombinations: React.FC = () => {
         <View key={item.id} style={{ marginTop: 10, borderRadius: 50}}>
           <CombinationContainer
             background={`${item.background}8C`}
-            onPress={() => handleNavigateToCombinationsList(item.numbers, item.numbersQuantity, item.background, item.combinationsQuantity)}
+            onPress={() => handleNavigateToCombinationsList(item.numbers, item.numbersQuantity, item.background)}
           >
             {item.numbers.map(number => (
               <Balls
